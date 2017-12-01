@@ -1,40 +1,41 @@
 package com.j_hawk.whattoplay.services;
 
-import android.content.Intent;
-import android.support.test.filters.LargeTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
+        import android.content.Intent;
+        import android.support.test.filters.LargeTest;
+        import android.support.test.rule.ActivityTestRule;
+        import android.support.test.runner.AndroidJUnit4;
+        import android.util.Log;
 
-import com.j_hawk.whattoplay.ImportCollection;
-import com.j_hawk.whattoplay.R;
-import com.j_hawk.whattoplay.data.DBHelper;
-import com.j_hawk.whattoplay.data.Game;
+        import com.j_hawk.whattoplay.ImportCollection;
+        import com.j_hawk.whattoplay.R;
+        import com.j_hawk.whattoplay.data.DBHelper;
+        import com.j_hawk.whattoplay.data.Game;
+        import com.j_hawk.whattoplay.data.OnlineGame;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
+        import org.junit.After;
+        import org.junit.Before;
+        import org.junit.Rule;
+        import org.junit.Test;
+        import org.junit.runner.RunWith;
+        import static org.junit.Assert.*;
 
-import java.util.ArrayList;
+        import java.util.ArrayList;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+        import static android.support.test.espresso.Espresso.onView;
+        import static android.support.test.espresso.action.ViewActions.click;
+        import static android.support.test.espresso.action.ViewActions.typeText;
+        import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class TestImportCollection {
+public class TestRemoveGameActivity {
 
     @Rule
     public ActivityTestRule<ImportCollection> findGameByQuerydRule = new ActivityTestRule<>(ImportCollection.class, false, false);
 
     private ArrayList<Game> expectedGames;
     private ArrayList<Game> testGames;
-    private static final String USER_ID = "Team JHawk";
+  //  private static final String USER_ID = "Team JHawk";
     private static final int NUM_OF_GAMES = 5;
     DBHelper dbHelper;
 
@@ -44,10 +45,8 @@ public class TestImportCollection {
         dbHelper = new DBHelper(findGameByQuerydRule.getActivity());
         dbHelper.rebuildDatabase();
         setupExpectedGames();
-
-        onView(withId(R.id.bggUserNameEdTxt)).perform(typeText(USER_ID));
-        onView(withId(R.id.importButton)).perform(click());
-
+        onView(withId(R.id.deletebutton)).perform(click());
+        dbHelper.removeGame(68448);
         testGames = dbHelper.getAllGames();
     }
 
@@ -57,25 +56,21 @@ public class TestImportCollection {
         dbHelper.close();
     }
 
-    @Test
-    public void testReturnGamesSize() {
-        assertEquals(NUM_OF_GAMES, testGames.size());
-    }
 
     @Test
-    public void testGamesImportedCorrectly() {
-        assertEquals(testGames.size(), expectedGames.size());
-        boolean allEqual = true;
-        int numberOfBadGames = 0;
-        for (int i = 0; i < testGames.size(); i++) {
-            if (!testGames.get(i).equals(expectedGames.get(i))) {
-                allEqual = false;
-                numberOfBadGames++;
-                Log.d("TestImportCollection", "Test Game:\n" + testGames.get(i).toString() + "\n");
-                Log.d("TestImportCollection",  "did not match:\n" + expectedGames.get(i).toString());
-            }
-        }
-        assertTrue(numberOfBadGames + " games were not the same", allEqual);
+    public void testGamesDeletedCorrectly() {
+        assertEquals(testGames.size(), expectedGames.size()-1);
+//        boolean allEqual = true;
+//        int numberOfBadGames = 0;
+//        for (int i = 0; i < testGames.size(); i++) {
+//            if (!testGames.get(i).equals(expectedGames.get(i))) {
+//                allEqual = false;
+//                numberOfBadGames++;
+//                Log.d("TestRemoveGame", "Test Game:\n" + testGames.get(i).toString() + "\n");
+//                Log.d("TestRemoveGame",  "did not match:\n" + expectedGames.get(i).toString());
+//            }
+//        }
+//        assertTrue(numberOfBadGames + " games were not the same", allEqual);
     }
 
     private void setupExpectedGames() {
@@ -204,6 +199,7 @@ public class TestImportCollection {
         mechanics.add("Hand Management");
         mechanics.add("Variable Player Powers");
         expectedGames.add(new Game(187645, "Star Wars: Rebellion", 2, 4, 2016, 240, thumbnail, 14, 14, categories, mechanics, 2, description));
+
 
     }
 
